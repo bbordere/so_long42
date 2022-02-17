@@ -6,11 +6,13 @@
 #    By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/16 20:31:26 by bbordere          #+#    #+#              #
-#    Updated: 2022/02/16 20:35:43 by bbordere         ###   ########.fr        #
+#    Updated: 2022/02/17 15:26:51 by bbordere         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = gcc
+
+CFLAGS = -Wall -Werror -Wextra
 
 NAME = so_long
 
@@ -21,7 +23,9 @@ SRCS = $(FILES)
 OBJS = $(SRCS:.c=.o)
 
 $(NAME): $(OBJS)
-	$(CC) $(OBJS) libft/libft.a -lmlx -lXext -lX11 -o $(NAME)
+	# $(CC) $(CFLAGS) $(OBJS) libft/libft.a -lmlx -lXext -lX11 -o $(NAME)
+	$(CC) $(OBJS) libft/libft.a minilibx-linux/libmlx.a -lXext -lX11 -o $(NAME)
+
 
 all: $(NAME)
 
