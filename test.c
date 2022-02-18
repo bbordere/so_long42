@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   test.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/02/18 16:43:15 by bbordere          #+#    #+#             */
+/*   Updated: 2022/02/18 16:55:28 by bbordere         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "so_long.h"
 
 
@@ -11,7 +23,10 @@ t_img		*ft_init_img(void *mlx, char *path)
 	img = malloc(sizeof(t_img));
 	if (!img)
 		return (NULL);
-	img->mlx_img = mlx_xpm_file_to_image(mlx, path, &size,  &size);
+	if (path)
+		img->mlx_img = mlx_xpm_file_to_image(mlx, path, &size,  &size);
+	else
+		img->mlx_img = mlx_new_image(mlx, 64 * 26, 64 * 13);
 	img->addr = mlx_get_data_addr(img->mlx_img, &img->bpp, &img->line_len, &img->endian);
 	return (img);
 }
@@ -94,7 +109,7 @@ t_data	*ft_init_data(char *path)
 	ft_check_map_char(data->map);
 	data->assets = ft_init_assets(data->mlx);
 	data->win = mlx_new_window(data->mlx, data->map->width * data->sprite_size, 
-								data->map->height * data->sprite_size, "so_long");
+							data->map->height * data->sprite_size, "so_long");
 	return (data);
 
 }
@@ -126,12 +141,32 @@ unsigned int	ft_get_pixel(t_img *img, int x, int y)
 }
 
 
-void	my_mlx_pixel_put(t_img *data, int x, int y, int color)
+void	my_mlx_pixel_put(t_img *img, int x, int y, int color)
 {
 	char	*dst;
 
-	dst = data->addr + (y * data->line_len + x * (data->bpp / 8));
+	dst = img->addr + (y * img->line_len + x * (img->bpp / 8));
 	*(unsigned int*)dst = color;
+}
+
+void	ft_paint(t_img *ground, t_img *mlx_img, int x, int y)
+{
+	int				x1;
+	int				y1;
+	unsigned int	color;
+
+	y1 = -1;
+	while (++y1 < 64)
+	{
+		x1 = -1;
+		while (++x1 < 64)
+		{
+			color = ft_get_pixel(ground, x1, y1);
+			if (!(color == (0xFF << 24)))
+				my_mlx_pixel_put(mlx_img, (x * 64) + x1, (y * 64) + y1, color);
+		}
+	}
+	
 }
 
 int	main(void)
@@ -141,23 +176,42 @@ int	main(void)
 	int		y;
 	
 	data = ft_init_data("map/map.ber");
-	y = 0;
-	while (y < data->map->height)
+	// y = 0;
+	// while (y < data->map->height)
+	// {
+	// 	x = 0;
+	// 	data->map->x = 0;
+	// 	while (x < data->map->width)
+	// 	{
+	// 		if (data->map->map[y][x] == '1')
+	// 			mlx_put_image_to_window(data->mlx, data->win, data->assets->wall->mlx_img, data->map->x, data->map->y);
+	// 		else if (data->map->map[y][x] == 'C')
+	// 			mlx_put_image_to_window(data->mlx, data->win, data->assets->collec->mlx_img, data->map->x, data->map->y);
+	// 		else
+	// 			mlx_put_image_to_window(data->mlx, data->win, data->assets->floor->mlx_img, data->map->x, data->map->y);
+	// 		data->map->x += data->sprite_size;
+	// 		x++;
+	// 	}
+	// 	data->map->y += data->sprite_size;
+	// 	y++;
+	// }
+	t_img *img;
+	img = ft_init_img(data->mlx, NULL);
+	y = -1;
+	while (++y < data->map->height)
 	{
-		x = 0;
-		data->map->x = 0;
-		while (x < data->map->width)
+		x = -1;
+		while (++x < data->map->width)
 		{
+			ft_paint(data->assets->floor, img, x, y);
 			if (data->map->map[y][x] == '1')
-				mlx_put_image_to_window(data->mlx, data->win, data->assets->wall->mlx_img, data->map->x, data->map->y);
-			else
-				mlx_put_image_to_window(data->mlx, data->win, data->assets->floor->mlx_img, data->map->x, data->map->y);
-			data->map->x += data->sprite_size;
-			x++;
-		}
-		data->map->y += data->sprite_size;
-		y++;
+				ft_paint(data->assets->wall, img, x, y);
+			if (data->map->map[y][x] == 'C')
+				ft_paint(data->assets->collec, img, x, y);
+		}		
 	}
+	mlx_put_image_to_window(data->mlx, data->win, img->mlx_img, 0, 0);
 	mlx_hook(data->win, 2,1L<<0, ft_esc, &data);
 	mlx_loop(data->mlx);
+
 }
