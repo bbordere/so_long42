@@ -6,17 +6,17 @@
 #    By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/16 20:31:26 by bbordere          #+#    #+#              #
-#    Updated: 2022/02/17 15:26:51 by bbordere         ###   ########.fr        #
+#    Updated: 2022/02/18 14:02:41 by bbordere         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = gcc
 
-CFLAGS = -Wall -Werror -Wextra
+# CFLAGS = -Wall -Werror -Wextra
 
 NAME = so_long
 
-FILES = test.c
+FILES = test.c map_checker.c
 
 SRCS = $(FILES)
 
