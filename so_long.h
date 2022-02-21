@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/16 18:44:55 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/19 19:37:03 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/21 15:40:48 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ typedef struct s_assets
     t_img	*wall;
     t_img	*collec;
 	t_img	*tmp;
+	t_img	*exit;
 }	t_assets;
 
 typedef struct s_map
@@ -58,8 +59,11 @@ typedef struct s_player
 	t_img	*img_r;
 	t_img	*img_l;
 	int		x;
+	int		on_exit;
 	int		y;
 	int		nb_col;
+	int		dir;
+	int		moove;
 
 }	t_player;
 
@@ -74,7 +78,10 @@ typedef	struct s_data
 	void		*win;
 }	t_data;
 
-
+# define UP 1
+# define DOWN 2
+# define LEFT 3
+# define RIGHT 4
 
 
 int	ft_check_map_char(t_map *map);

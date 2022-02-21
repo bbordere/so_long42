@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 16:43:15 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/20 14:28:40 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/21 16:17:26 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ t_assets    *ft_init_assets(void *mlx)
 	asset->wall = ft_init_img(mlx, "assets/wall_2.xpm");
 	asset->floor = ft_init_img(mlx, "assets/clay.xpm");
 	asset->collec = ft_init_img(mlx, "assets/amethyst.xpm");
-	asset->tmp = mlx_new_image(mlx, size, size);
+	asset->exit = ft_init_img(mlx, "assets/wall.xpm");
 	return (asset);
 }
 
@@ -107,7 +107,10 @@ t_player	*ft_init_player(void *mlx)
 	player->img_f = ft_init_img(mlx, "assets/player_F.xpm");
 	player->img_l = ft_init_img(mlx, "assets/player_L.xpm");
 	player->img_r = ft_init_img(mlx, "assets/player_R.xpm");
+	player->on_exit = 0;
 	player->nb_col = 0;
+	player->dir = 0;
+	player->moove = 0;
 	return (player);
 }
 
@@ -149,7 +152,7 @@ void	my_mlx_pixel_put(t_img *img, int x, int y, int color)
 	*(unsigned int*)dst = color;
 }
 
-void	ft_paint(t_img *ground, t_img *mlx_img, int x, int y)
+void	ft_paint(t_img *element, t_img *mlx_img, int x, int y)
 {
 	int				x1;
 	int				y1;
@@ -161,7 +164,7 @@ void	ft_paint(t_img *ground, t_img *mlx_img, int x, int y)
 		x1 = -1;
 		while (++x1 < 64)
 		{
-			color = ft_get_pixel(ground, x1, y1);
+			color = ft_get_pixel(element, x1, y1);
 			if (!(color == (unsigned int)(0xFF << 24)))
 				my_mlx_pixel_put(mlx_img, (x * 64) + x1, (y * 64) + y1, color);
 		}
@@ -169,11 +172,71 @@ void	ft_paint(t_img *ground, t_img *mlx_img, int x, int y)
 	
 }
 
+void	ft_check_item(t_data *data)
+{
+	if (data->map->map[data->player->y][data->player->x] == 'C')
+	{
+		data->map->map[data->player->y][data->player->x] = '0';
+		data->player->nb_col += 1;
+	}
+	if (data->map->map[data->player->y][data->player->x] == 'E')
+	{
+		if (data->player->nb_col == data->map->item)
+		{
+			mlx_loop_end(data->mlx);
+			ft_putstr_fd("YOU WIN !\n",1);
+			exit(0);
+		}
+		else if (data->player->on_exit == 0)
+		{
+			ft_putstr_fd("YOU MUST COLLECT ALL ITEMS !\n",1);
+			data->player->on_exit = 1;
+		}
+	}
+	else
+		data->player->on_exit = 0;
+}
+
+void	ft_check_pos(t_data *data, int dir)
+{
+	if (dir == RIGHT)
+	{
+		if (!(data->map->map[data->player->y][data->player->x + 1] == '1'))
+			data->player->x += 1;
+		data->player->dir = RIGHT;
+	}
+	if (dir == LEFT)
+	{
+		if (!(data->map->map[data->player->y][data->player->x - 1] == '1'))
+			data->player->x -= 1;
+		data->player->dir = LEFT;
+	}
+	if (dir == UP)
+	{
+		if (!(data->map->map[data->player->y - 1][data->player->x] == '1'))
+			data->player->y -= 1;
+		data->player->dir = UP;
+	}
+	if (dir == DOWN)
+	{
+		if (!(data->map->map[data->player->y + 1][data->player->x] == '1'))
+			data->player->y += 1;
+		data->player->dir = DOWN;
+	}
+	data->player->moove += 1;
+}
+
 int	ft_key_hook(int keycode, t_data *data)
 {
 	if (keycode == 'd')
-		ft_putstr_fd("Hello\n", 1);
-	if (keycode == 65307)
+		ft_check_pos(data, RIGHT);
+	else if (keycode == 'a')
+		ft_check_pos(data, LEFT);
+	else if (keycode == 'w')
+		ft_check_pos(data, UP);
+	else if (keycode == 's')
+		ft_check_pos(data, DOWN);
+	else if (keycode == 65307)
 	{
 		mlx_loop_end(data->mlx);
 		exit(0);
@@ -186,34 +249,25 @@ void	ft_destroy_imgs(t_data *data)
 	mlx_destroy_image(data->mlx, data->assets->floor->mlx_img);
 }
 
-int	main(void)
+void	ft_render_player(t_data *data)
 {
-	t_data 	*data;
+	if (data->player->dir == RIGHT)
+		ft_paint(data->player->img_r, data->img, data->player->x, data->player->y);
+	if (data->player->dir == LEFT)
+		ft_paint(data->player->img_l, data->img, data->player->x, data->player->y);
+	if (data->player->dir == UP)
+		ft_paint(data->player->img_b, data->img, data->player->x, data->player->y);
+	if (data->player->dir == DOWN)
+		ft_paint(data->player->img_f, data->img, data->player->x, data->player->y);
+	if (data->player->dir == 0)
+		ft_paint(data->player->img_f, data->img, data->player->x, data->player->y);
+}
+
+int	ft_render_map(t_data *data)
+{
 	int		x;
 	int		y;
-	
-	data = ft_init_data("map/map.ber");
-	// y = 0;
-	// while (y < data->map->height)
-	// {
-	// 	x = 0;
-	// 	data->map->x = 0;
-	// 	while (x < data->map->width)
-	// 	{
-	// 		if (data->map->map[y][x] == '1')
-	// 			mlx_put_image_to_window(data->mlx, data->win, data->assets->wall->mlx_img, data->map->x, data->map->y);
-	// 		else if (data->map->map[y][x] == 'C')
-	// 			mlx_put_image_to_window(data->mlx, data->win, data->assets->collec->mlx_img, data->map->x, data->map->y);
-	// 		else
-	// 			mlx_put_image_to_window(data->mlx, data->win, data->assets->floor->mlx_img, data->map->x, data->map->y);
-	// 		data->map->x += data->sprite_size;
-	// 		x++;
-	// 	}
-	// 	data->map->y += data->sprite_size;
-	// 	y++;
-	// }
-	// t_img *img;
-	// img = ft_init_img(data->mlx, NULL);
+
 	y = -1;
 	while (++y < data->map->height)
 	{
@@ -225,17 +279,31 @@ int	main(void)
 				ft_paint(data->assets->wall, data->img, x, y);
 			if (data->map->map[y][x] == 'C')
 				ft_paint(data->assets->collec, data->img, x, y);
+			if (data->map->map[y][x] == 'E')
+				ft_paint(data->assets->exit, data->img, x, y);
 			if (data->map->map[y][x] == 'P')
 			{
 				data->player->x = x;
 				data->player->y = y;
-				ft_paint(data->player->img_f, data->img, x, y);
+				data->map->map[y][x] = '0';
 			}
 		}		
 	}
+	ft_check_item(data);
+	ft_render_player(data);
 	mlx_put_image_to_window(data->mlx, data->win, data->img->mlx_img, 0, 0);
-	mlx_key_hook(data->win, ft_key_hook, &data);
+	return (0);
+}
+
+int	main(void)
+{
+	t_data 	*data;
+	
+	
+	data = ft_init_data("map/map.ber");
+	// mlx_key_hook(data->win, ft_key_hook, data);
+	mlx_hook(data->win, 2,(1L<<0), ft_key_hook, data);
+	mlx_loop_hook(data->mlx, ft_render_map, data);
 	mlx_loop(data->mlx);
-	ft_destroy_imgs(data);
 
 }

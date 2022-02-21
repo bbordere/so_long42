@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 10:01:39 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/19 19:24:44 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/21 16:04:56 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,10 @@ int	ft_char_in(char *str, t_map *map)
 	{
 		if (str[i] == 'C')
 			map->item += 1;
-		if (str[i] == 'E')
-			map->item += 1;
-		if (str[i] == 'P')
-			map->item += 1;
+		// if (str[i] == 'E')
+		// 	map->item += 1;
+		// if (str[i] == 'P')
+		// 	map->item += 1;
 	}
 	return (0);
 }
