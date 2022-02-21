@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 16:43:15 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/18 16:55:28 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/20 14:28:40 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,21 @@ t_map	*ft_init_map(char *file)
 	return (map);
 }
 
+t_player	*ft_init_player(void *mlx)
+{
+	t_player	*player;
+
+	player = malloc(sizeof(t_player));
+	if (!player)
+		return (NULL);
+	player->img_b = ft_init_img(mlx, "assets/player_B.xpm");
+	player->img_f = ft_init_img(mlx, "assets/player_F.xpm");
+	player->img_l = ft_init_img(mlx, "assets/player_L.xpm");
+	player->img_r = ft_init_img(mlx, "assets/player_R.xpm");
+	player->nb_col = 0;
+	return (player);
+}
+
 t_data	*ft_init_data(char *path)
 {
 	t_data	*data;
@@ -108,26 +123,12 @@ t_data	*ft_init_data(char *path)
 	data->map = ft_init_map(path);
 	ft_check_map_char(data->map);
 	data->assets = ft_init_assets(data->mlx);
+	data->img = ft_init_img(data->mlx, NULL);
+	data->player = ft_init_player(data->mlx);
 	data->win = mlx_new_window(data->mlx, data->map->width * data->sprite_size, 
 							data->map->height * data->sprite_size, "so_long");
 	return (data);
 
-}
-
-void	ft_destroy_imgs(t_data *data)
-{
-	mlx_destroy_image(data->mlx, data->assets->floor);
-	mlx_destroy_image(data->mlx, data->assets->wall);
-	mlx_destroy_image(data->mlx, data->assets->collec);
-}
-
-int	ft_esc(t_data *data)
-{
-	
-	ft_destroy_imgs(data);		
-	mlx_destroy_window(data->mlx, data->win);
-	mlx_destroy_display(data->mlx);
-	return (0);
 }
 
 unsigned int	ft_get_pixel(t_img *img, int x, int y)
@@ -139,7 +140,6 @@ unsigned int	ft_get_pixel(t_img *img, int x, int y)
 	color = *(unsigned int *)pix;
 	return (color);
 }
-
 
 void	my_mlx_pixel_put(t_img *img, int x, int y, int color)
 {
@@ -162,11 +162,28 @@ void	ft_paint(t_img *ground, t_img *mlx_img, int x, int y)
 		while (++x1 < 64)
 		{
 			color = ft_get_pixel(ground, x1, y1);
-			if (!(color == (0xFF << 24)))
+			if (!(color == (unsigned int)(0xFF << 24)))
 				my_mlx_pixel_put(mlx_img, (x * 64) + x1, (y * 64) + y1, color);
 		}
 	}
 	
+}
+
+int	ft_key_hook(int keycode, t_data *data)
+{
+	if (keycode == 'd')
+		ft_putstr_fd("Hello\n", 1);
+	if (keycode == 65307)
+	{
+		mlx_loop_end(data->mlx);
+		exit(0);
+	}
+	return (0);
+}
+
+void	ft_destroy_imgs(t_data *data)
+{
+	mlx_destroy_image(data->mlx, data->assets->floor->mlx_img);
 }
 
 int	main(void)
@@ -195,23 +212,30 @@ int	main(void)
 	// 	data->map->y += data->sprite_size;
 	// 	y++;
 	// }
-	t_img *img;
-	img = ft_init_img(data->mlx, NULL);
+	// t_img *img;
+	// img = ft_init_img(data->mlx, NULL);
 	y = -1;
 	while (++y < data->map->height)
 	{
 		x = -1;
 		while (++x < data->map->width)
 		{
-			ft_paint(data->assets->floor, img, x, y);
+			ft_paint(data->assets->floor, data->img, x, y);
 			if (data->map->map[y][x] == '1')
-				ft_paint(data->assets->wall, img, x, y);
+				ft_paint(data->assets->wall, data->img, x, y);
 			if (data->map->map[y][x] == 'C')
-				ft_paint(data->assets->collec, img, x, y);
+				ft_paint(data->assets->collec, data->img, x, y);
+			if (data->map->map[y][x] == 'P')
+			{
+				data->player->x = x;
+				data->player->y = y;
+				ft_paint(data->player->img_f, data->img, x, y);
+			}
 		}		
 	}
-	mlx_put_image_to_window(data->mlx, data->win, img->mlx_img, 0, 0);
-	mlx_hook(data->win, 2,1L<<0, ft_esc, &data);
+	mlx_put_image_to_window(data->mlx, data->win, data->img->mlx_img, 0, 0);
+	mlx_key_hook(data->win, ft_key_hook, &data);
 	mlx_loop(data->mlx);
+	ft_destroy_imgs(data);
 
 }

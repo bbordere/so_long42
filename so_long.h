@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/16 18:44:55 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/18 15:08:48 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/19 19:37:03 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,14 +51,31 @@ typedef struct s_map
 	int		fd_map;
 }	t_map;
 
+typedef struct s_player
+{
+	t_img	*img_b;
+	t_img	*img_f;
+	t_img	*img_r;
+	t_img	*img_l;
+	int		x;
+	int		y;
+	int		nb_col;
+
+}	t_player;
+
 typedef	struct s_data
 {
 	t_assets	*assets;
 	t_map		*map;
+	t_img		*img;
+	t_player	*player;
 	int			sprite_size;
 	void		*mlx;
 	void		*win;
 }	t_data;
+
+
+
 
 int	ft_check_map_char(t_map *map);
 
