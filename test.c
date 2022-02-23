@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 16:43:15 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/22 14:18:23 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/23 15:55:40 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,14 @@ t_img		*ft_init_img(void *mlx, char *path, int width, int height)
 	t_img	*img;
 	int		size;
 
-	size = 64;
+	size = SPRITE_SIZE;
 	img = malloc(sizeof(t_img));
 	if (!img)
 		return (NULL);
 	if (path)
 		img->mlx_img = mlx_xpm_file_to_image(mlx, path, &size,  &size);
 	else
-		img->mlx_img = mlx_new_image(mlx, 64 * width, 64 * height);
+		img->mlx_img = mlx_new_image(mlx, SPRITE_SIZE * width, SPRITE_SIZE * height);
 	img->addr = mlx_get_data_addr(img->mlx_img, &img->bpp, &img->line_len, &img->endian);
 	return (img);
 }
@@ -39,7 +39,6 @@ t_assets    *ft_init_assets(void *mlx)
 	asset = malloc(sizeof(t_assets));
 	if (!asset)
 		return (NULL);
-	size = 64;
 	asset->wall = ft_init_img(mlx, "assets/wall_2.xpm", 0, 0);
 	asset->floor = ft_init_img(mlx, "assets/clay.xpm", 0, 0);
 	asset->collec = ft_init_img(mlx, "assets/amethyst.xpm", 0, 0);
@@ -110,7 +109,7 @@ t_player	*ft_init_player(void *mlx)
 	player->on_exit = 0;
 	player->nb_col = 0;
 	player->dir = 0;
-	player->moove = 0;
+	player->move = 0;
 	return (player);
 }
 
@@ -121,7 +120,7 @@ t_data	*ft_init_data(char *path)
 	data = malloc(sizeof(t_data));
 	if (!data)
 		return (NULL);
-	data->sprite_size = 64;	
+	data->sprite_size = SPRITE_SIZE;	
 	data->mlx = mlx_init();
 	data->map = ft_init_map(path);
 	ft_check_map_char(data->map);
@@ -159,99 +158,16 @@ void	ft_paint(t_img *element, t_img *mlx_img, int x, int y)
 	unsigned int	color;
 
 	y1 = -1;
-	while (++y1 < 64)
+	while (++y1 < SPRITE_SIZE)
 	{
 		x1 = -1;
-		while (++x1 < 64)
+		while (++x1 < SPRITE_SIZE)
 		{
 			color = ft_get_pixel(element, x1, y1);
 			if (!(color == (unsigned int)(0xFF << 24)))
-				my_mlx_pixel_put(mlx_img, (x * 64) + x1, (y * 64) + y1, color);
+				my_mlx_pixel_put(mlx_img, (x * SPRITE_SIZE) + x1, (y * SPRITE_SIZE) + y1, color);
 		}
 	}	
-}
-
-void	ft_check_item(t_data *data)
-{
-	if (data->map->map[data->player->y][data->player->x] == 'C')
-	{
-		data->map->map[data->player->y][data->player->x] = '0';
-		data->player->nb_col += 1;
-	}
-	if (data->map->map[data->player->y][data->player->x] == 'E')
-	{
-		if (data->player->nb_col == data->map->item)
-		{
-			mlx_loop_end(data->mlx);
-			ft_putstr_fd("YOU WIN !\n",1);
-			exit(0);
-		}
-		else if (data->player->on_exit == 0)
-		{
-			ft_putstr_fd("YOU MUST COLLECT ALL ITEMS !\n",1);
-			data->player->on_exit = 1;
-		}
-	}
-	else
-		data->player->on_exit = 0;
-}
-
-void	ft_move(int *comp, int set, t_player *player)
-{
-	*comp += set;
-	player->moove +=1;
-	printf("%d\n", player->moove);
-}
-
-void	ft_check_pos(t_data *data, int dir)
-{
-	if (dir == RIGHT)
-	{
-		if (!(data->map->map[data->player->y][data->player->x + 1] == '1'))
-			ft_move(&data->player->x, 1, data->player);
-		data->player->dir = RIGHT;
-	}
-	else if (dir == LEFT)
-	{
-		if (!(data->map->map[data->player->y][data->player->x - 1] == '1'))
-			ft_move(&data->player->x, -1, data->player);
-		data->player->dir = LEFT;
-	}
-	else if (dir == UP)
-	{
-		if (!(data->map->map[data->player->y - 1][data->player->x] == '1'))
-			ft_move(&data->player->y, -1, data->player);
-		data->player->dir = UP;
-	}
-	else if (dir == DOWN)
-	{
-		if (!(data->map->map[data->player->y + 1][data->player->x] == '1'))
-			ft_move(&data->player->y, 1, data->player);
-		data->player->dir = DOWN;
-	}
-}
-
-int	ft_key_hook(int keycode, t_data *data)
-{
-	if (keycode == 'd' || keycode == 65363)
-		ft_check_pos(data, RIGHT);
-	else if (keycode == 'a' || keycode == 65361)
-		ft_check_pos(data, LEFT);
-	else if (keycode == 'w' || keycode == 65362)
-		ft_check_pos(data, UP);
-	else if (keycode == 's'|| keycode == 65364)
-		ft_check_pos(data, DOWN);
-	else if (keycode == 65307)
-	{
-		mlx_loop_end(data->mlx);
-		exit(0);
-	}
-	return (0);
-}
-
-void	ft_destroy_imgs(t_data *data)
-{
-	mlx_destroy_image(data->mlx, data->assets->floor->mlx_img);
 }
 
 void	ft_render_player(t_data *data)
@@ -294,9 +210,194 @@ int	ft_render_map(t_data *data)
 			}
 		}		
 	}
-	ft_check_item(data);
 	ft_render_player(data);
 	mlx_put_image_to_window(data->mlx, data->win, data->img->mlx_img, 0, 0);
+	return (0);
+}
+
+void	ft_move(int *comp, int set, t_player *player)
+{
+	*comp += set;
+	player->move +=1;
+	ft_printf("%d\n", player->move);
+}
+
+void	ft_free_map(char **map)
+{
+	int	i;
+
+	i = -1;
+	while (map[++i])
+		free(map[i]);
+	free(map);
+	
+}
+
+int	ft_free_mlx(t_data *data)
+{
+	mlx_destroy_image(data->mlx, data->player->img_b->mlx_img);
+	mlx_destroy_image(data->mlx, data->player->img_r->mlx_img);
+	mlx_destroy_image(data->mlx, data->player->img_l->mlx_img);
+	mlx_destroy_image(data->mlx, data->player->img_f->mlx_img);
+	mlx_destroy_image(data->mlx, data->assets->collec->mlx_img);
+	mlx_destroy_image(data->mlx, data->assets->wall->mlx_img);
+	mlx_destroy_image(data->mlx, data->assets->floor->mlx_img);
+	mlx_destroy_image(data->mlx, data->assets->exit->mlx_img);
+	mlx_destroy_image(data->mlx, data->img->mlx_img);
+	mlx_destroy_window(data->mlx, data->win);
+	mlx_destroy_display(data->mlx);
+	free(data->mlx);
+	free(data->player->img_b);
+	free(data->player->img_l);
+	free(data->player->img_r);
+	free(data->player->img_f);
+	free(data->assets->wall);
+	free(data->assets->collec);
+	free(data->assets->exit);
+	free(data->assets->floor);
+	free(data->assets);
+	free(data->img);
+	free(data->player);
+	ft_free_map(data->map->map);
+	free(data->map);
+	free(data);
+	return (0);
+}
+
+void	ft_on_exit(t_data *data)
+{
+	ft_paint(data->assets->exit, data->img, data->player->x, data->player->y);
+	if (data->player->nb_col == data->map->item)
+	{
+		mlx_loop_end(data->mlx);
+		ft_printf("YOU WIN WITH %d MOVES !\n", data->player->move);
+		ft_free_mlx(data);
+		exit(0);
+	}
+	else
+		ft_printf("YOU MUST COLLECT ALL ITEMS !\n");
+}
+
+void	ft_up(t_data *data)
+{
+
+	if (data->map->map[data->player->y - 1][data->player->x] == 'E')
+			ft_on_exit(data);
+	if (!(data->map->map[data->player->y - 1][data->player->x] == '1'))
+	{
+		if (data->map->map[data->player->y][data->player->x] == 'E')
+			ft_paint(data->assets->exit, data->img, data->player->x, data->player->y);
+		else
+		{
+			if (data->map->map[data->player->y - 1][data->player->x] == 'C')
+			{
+				data->player->nb_col += 1;
+				ft_paint(data->assets->floor, data->img, data->player->x, data->player->y - 1);
+			}
+			data->map->map[data->player->y][data->player->x] = 0;
+			ft_paint(data->assets->floor, data->img, data->player->x, data->player->y);
+		}
+		ft_move(&data->player->y, -1, data->player);
+	}
+	ft_paint(data->player->img_b, data->img, data->player->x, data->player->y);
+	mlx_put_image_to_window(data->mlx, data->win, data->img->mlx_img, 0, 0);
+}
+
+void	ft_down(t_data *data)
+{
+	if (data->map->map[data->player->y + 1][data->player->x] == 'E')
+			ft_on_exit(data);
+	if (!(data->map->map[data->player->y + 1][data->player->x] == '1'))
+	{
+		if (data->map->map[data->player->y][data->player->x] == 'E')
+			ft_paint(data->assets->exit, data->img, data->player->x, data->player->y);
+		else
+		{
+			if (data->map->map[data->player->y + 1][data->player->x] == 'C')
+			{
+				data->player->nb_col += 1;
+				ft_paint(data->assets->floor, data->img, data->player->x,  data->player->y + 1);
+			}
+			data->map->map[data->player->y][data->player->x] = 0;
+			ft_paint(data->assets->floor, data->img, data->player->x, data->player->y);
+		}
+		ft_move(&data->player->y, 1, data->player);
+	}
+	ft_paint(data->player->img_f, data->img, data->player->x, data->player->y);
+	mlx_put_image_to_window(data->mlx, data->win, data->img->mlx_img, 0, 0);
+}
+
+void	ft_left(t_data *data)
+{
+	if (data->map->map[data->player->y][data->player->x - 1] == 'E')
+			ft_on_exit(data);
+	if (!(data->map->map[data->player->y][data->player->x - 1] == '1'))
+	{
+		if (data->map->map[data->player->y][data->player->x] == 'E')
+			ft_paint(data->assets->exit, data->img, data->player->x, data->player->y);
+		else
+		{
+			if (data->map->map[data->player->y][data->player->x - 1] == 'C')
+			{
+				data->player->nb_col += 1;
+				ft_paint(data->assets->floor, data->img, data->player->x - 1, data->player->y);
+			}
+			data->map->map[data->player->y][data->player->x] = 0;
+			ft_paint(data->assets->floor, data->img, data->player->x, data->player->y);
+		}
+		ft_move(&data->player->x, -1, data->player);
+	}
+	ft_paint(data->player->img_l, data->img, data->player->x, data->player->y);
+	mlx_put_image_to_window(data->mlx, data->win, data->img->mlx_img, 0, 0);
+}
+
+void	ft_right(t_data *data)
+{
+	if (data->map->map[data->player->y][data->player->x + 1] == 'E')
+			ft_on_exit(data);
+	if (!(data->map->map[data->player->y][data->player->x + 1] == '1'))
+	{
+		if (data->map->map[data->player->y][data->player->x] == 'E')
+			ft_paint(data->assets->exit, data->img, data->player->x, data->player->y);
+		else
+		{
+			if (data->map->map[data->player->y][data->player->x + 1] == 'C')
+			{
+				data->player->nb_col += 1;
+				ft_paint(data->assets->floor, data->img, data->player->x + 1, data->player->y);
+			}
+			data->map->map[data->player->y][data->player->x] = 0;
+			ft_paint(data->assets->floor, data->img, data->player->x, data->player->y);
+		}
+		ft_move(&data->player->x, 1, data->player);
+	}
+	ft_paint(data->player->img_r, data->img, data->player->x, data->player->y);
+	mlx_put_image_to_window(data->mlx, data->win, data->img->mlx_img, 0, 0);
+}
+
+int	ft_quit(t_data *data)
+{
+	mlx_loop_end(data->mlx);
+	ft_free_mlx(data);
+	exit(0);
+}
+
+int	ft_key_hook(int keycode, t_data *data)
+{
+	if (keycode == 'd' || keycode == 65363)
+		// ft_check_pos(data, RIGHT);
+		ft_right(data);
+	else if (keycode == 'a' || keycode == 65361)
+		// ft_check_pos(data, LEFT);
+		ft_left(data);
+	else if (keycode == 'w' || keycode == 65362)
+		// ft_check_pos(data, UP);
+		ft_up(data);
+	else if (keycode == 's'|| keycode == 65364)
+		// ft_check_pos(data, DOWN);
+		ft_down(data);
+	else if (keycode == 65307)
+		ft_quit(data);
 	return (0);
 }
 
@@ -306,10 +407,9 @@ int	main(int ac, char **av)
 	
 	
 	data = ft_init_data(av[1]);
-	// mlx_key_hook(data->win, ft_key_hook, data);
-	mlx_hook(data->win, 2, 1L, ft_key_hook, data);
-	mlx_hook(data->win, 17, 1L, mlx_loop_end, data->mlx);
-	mlx_loop_hook(data->mlx, ft_render_map, data);
+	ft_render_map(data);
+	mlx_hook(data->win, 2, (1L << 0), ft_key_hook, data);
+	mlx_hook(data->win, 17, (1L << 0), ft_quit, data);
 	mlx_loop(data->mlx);
 
 }

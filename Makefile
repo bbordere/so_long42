@@ -6,7 +6,7 @@
 #    By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/16 20:31:26 by bbordere          #+#    #+#              #
-#    Updated: 2022/02/18 14:02:41 by bbordere         ###   ########.fr        #
+#    Updated: 2022/02/23 14:51:46 by bbordere         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,9 +24,8 @@ OBJS = $(SRCS:.c=.o)
 
 $(NAME): $(OBJS)
 	# $(CC) $(CFLAGS) $(OBJS) libft/libft.a -lmlx -lXext -lX11 -o $(NAME)
+	$(MAKE) -s all -C libft
 	$(CC) $(OBJS) libft/libft.a minilibx-linux/libmlx.a -lXext -lX11 -o $(NAME)
-
-
 all: $(NAME)
 
 clean:

@@ -42,7 +42,7 @@ def draw(maze):
 		for x, cell in enumerate(row):
 			line.append('0' if cell & S else '0')
 			if cell & E:
-				line.append('0' if (cell | maze[y][x+1]) & S else '0')
+				line.append('0' if (cell | maze[y][x+1]) & S else '1')
 			else:
 				line.append('1')
 		map.append(''.join(line))
