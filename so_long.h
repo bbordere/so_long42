@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/16 18:44:55 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/23 15:36:18 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/24 15:23:34 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,8 @@ typedef	struct s_data
 # define SPRITE_SIZE 64
 
 
-int	ft_check_map_char(t_map *map);
+int		ft_check_map_char(t_map *map);
+void	ft_free_map(char **map);
 
 
 #endif
