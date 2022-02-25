@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 10:01:39 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/24 16:04:16 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/25 13:02:11 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int	ft_check_map_char(t_map *map)
 		return (ft_error(" _ \n/!\\ Map must be surrounded by wall !\n‾‾‾\n", map));
 	while (map->map[++i])
 	{
-		if (ft_strlen(map->map[i]) != map->width)
+		if (ft_strlen(map->map[i]) != (size_t) map->width)
 			return (ft_error(" _ \n/!\\ Map must be rectangular !\n‾‾‾\n", map));
 		if (ft_char_in(map->map[i], map) == -1)
 			return (ft_error(" _ \n/!\\ Map contains invalid char !\n‾‾‾\n", map));			

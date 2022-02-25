@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 16:43:15 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/24 15:30:16 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/25 13:01:42 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,13 +34,12 @@ t_img		*ft_init_img(void *mlx, char *path, int width, int height)
 t_assets    *ft_init_assets(void *mlx)
 {
 	t_assets    *asset;
-	int 		size;
 
 	asset = malloc(sizeof(t_assets));
 	if (!asset)
 		return (NULL);
 	asset->wall = ft_init_img(mlx, "assets/wall_2.xpm", 0, 0);
-	asset->floor = ft_init_img(mlx, "assets/clay.xpm", 0, 0);
+	asset->floor = ft_init_img(mlx, "assets/floor.xpm", 0, 0);
 	asset->collec = ft_init_img(mlx, "assets/potion.xpm", 0, 0);
 	asset->exit = ft_init_img(mlx, "assets/wall.xpm", 0, 0);
 	return (asset);
@@ -434,11 +433,12 @@ int	main(int ac, char **av)
 {
 	t_data 	*data;
 	
-	
+	(void)ac;
 	data = ft_init_data(av[1]);
 	ft_render_map(data);
 	mlx_hook(data->win, 2, (1L << 0), ft_key_hook, data);
 	mlx_hook(data->win, 17, (1L << 0), ft_quit, data);
 	// mlx_loop_hook(data->mlx, ft_key_hook, data);
 	mlx_loop(data->mlx);
+
 }
