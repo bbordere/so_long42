@@ -6,13 +6,13 @@
 #    By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/16 20:31:26 by bbordere          #+#    #+#              #
-#    Updated: 2022/02/23 14:51:46 by bbordere         ###   ########.fr        #
+#    Updated: 2022/02/25 20:16:48 by bbordere         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = gcc
 
-# CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra
 
 NAME = so_long
 
@@ -30,9 +30,11 @@ all: $(NAME)
 
 clean:
 	rm -f ${OBJS}
+	$(MAKE) -s clean -C libft
 
 fclean : clean
 	rm -f $(NAME)
+	$(MAKE) -s fclean -C libft
 
 re: fclean all
 

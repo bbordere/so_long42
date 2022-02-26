@@ -6,13 +6,11 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 16:43:15 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/25 13:01:42 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/25 20:42:27 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
-
-
 
 t_img		*ft_init_img(void *mlx, char *path, int width, int height)
 {
@@ -41,7 +39,7 @@ t_assets    *ft_init_assets(void *mlx)
 	asset->wall = ft_init_img(mlx, "assets/wall_2.xpm", 0, 0);
 	asset->floor = ft_init_img(mlx, "assets/floor.xpm", 0, 0);
 	asset->collec = ft_init_img(mlx, "assets/potion.xpm", 0, 0);
-	asset->exit = ft_init_img(mlx, "assets/wall.xpm", 0, 0);
+	asset->exit = ft_init_img(mlx, "assets/exit.xpm", 0, 0);
 	return (asset);
 }
 
@@ -318,7 +316,10 @@ void	ft_up(t_data *data)
 	if (!(data->map->map[data->player->y - 1][data->player->x] == '1'))
 	{
 		if (data->map->map[data->player->y][data->player->x] == 'E')
+		{
+			ft_paint(data->assets->floor, data->img, data->player->x, data->player->y);
 			ft_paint(data->assets->exit, data->img, data->player->x, data->player->y);
+		}
 		else
 		{
 			if (data->map->map[data->player->y - 1][data->player->x] == 'C')
@@ -341,7 +342,10 @@ void	ft_down(t_data *data)
 	if (!(data->map->map[data->player->y + 1][data->player->x] == '1'))
 	{
 		if (data->map->map[data->player->y][data->player->x] == 'E')
+		{
+			ft_paint(data->assets->floor, data->img, data->player->x, data->player->y);
 			ft_paint(data->assets->exit, data->img, data->player->x, data->player->y);
+		}
 		else
 		{
 			if (data->map->map[data->player->y + 1][data->player->x] == 'C')
@@ -364,7 +368,10 @@ void	ft_left(t_data *data)
 	if (!(data->map->map[data->player->y][data->player->x - 1] == '1'))
 	{
 		if (data->map->map[data->player->y][data->player->x] == 'E')
+		{
+			ft_paint(data->assets->floor, data->img, data->player->x, data->player->y);
 			ft_paint(data->assets->exit, data->img, data->player->x, data->player->y);
+		}
 		else
 		{
 			if (data->map->map[data->player->y][data->player->x - 1] == 'C')
@@ -387,7 +394,10 @@ void	ft_right(t_data *data)
 	if (!(data->map->map[data->player->y][data->player->x + 1] == '1'))
 	{
 		if (data->map->map[data->player->y][data->player->x] == 'E')
+		{
+			ft_paint(data->assets->floor, data->img, data->player->x, data->player->y);
 			ft_paint(data->assets->exit, data->img, data->player->x, data->player->y);
+		}
 		else
 		{
 			if (data->map->map[data->player->y][data->player->x + 1] == 'C')

@@ -15,6 +15,24 @@
 
 # include <stdlib.h>
 # include <unistd.h>
+# include <stdarg.h>
+
+# define HEXA_BASE_U "0123456789ABCDEF"
+# define HEXA_BASE_L "0123456789abcdef"
+# define DECIMAL_BASE "0123456789"
+# define NUL_STR "(null)"
+
+# ifdef __linux__
+#  define NULL_PTR "(nil)"
+
+# elif
+#  ifdef __APPLE__
+#   define NULL_PTR "0x0"
+#  endif
+
+# else
+#  define NULL_PTR "0x0"
+# endif
 
 typedef struct s_list
 {
@@ -45,6 +63,11 @@ size_t	ft_strlcat(char *dst, const char *src, size_t size);
 
 void	*ft_memset(void *str, int c, size_t len);
 void	*ft_calloc(size_t count, size_t size);
+void	ft_putnbr(int n, int *i);
+void	ft_putnbr_base(unsigned long n, char *base, int *i);
+void	ft_put_address(void	*p, int *i);
+void	ft_putstr(char *str, int *i);
+void	ft_putchar(int c, int *i);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
 void	*ft_memmove(void *dst, const void *src, size_t n);
 void	*ft_memchr(const void *s, int c, size_t n);
