@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test.c                                             :+:      :+:    :+:   */
+/*   test_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 16:43:15 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/27 11:17:39 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/27 20:08:44 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "so_long.h"
+#include "so_long_bonus.h"
 
 t_img		*ft_init_img(void *mlx, char *path, int width, int height)
 {
@@ -39,8 +39,24 @@ t_assets    *ft_init_assets(void *mlx)
 	asset->wall = ft_init_img(mlx, "assets/wall_2.xpm", 0, 0);
 	asset->floor = ft_init_img(mlx, "assets/floor.xpm", 0, 0);
 	asset->collec = ft_init_img(mlx, "assets/potion.xpm", 0, 0);
+	asset->collec2 = ft_init_img(mlx, "assets/potion2.xpm", 0, 0);
+	asset->collec3 = ft_init_img(mlx, "assets/potion3.xpm", 0, 0);
 	asset->exit = ft_init_img(mlx, "assets/exit.xpm", 0, 0);
 	return (asset);
+}
+
+t_enemy		*ft_init_enemy(void *mlx)
+{
+	t_enemy	*enemy;
+
+	enemy = malloc(sizeof(t_enemy));
+	if (!enemy)
+		return (NULL);
+	enemy->img_b = ft_init_img(mlx, "assets/enemy_b.xpm", 0, 0);
+	enemy->img_f = ft_init_img(mlx, "assets/enemy_F.xpm", 0, 0);
+	enemy->dir = 0;
+	enemy->on_wall = 0;
+	return (enemy);
 }
 
 char	**ft_fill_map(t_map *o_map)
@@ -130,6 +146,7 @@ t_data	*ft_init_data(char *path)
 	data->player = ft_init_player(data->mlx);
 	data->win = mlx_new_window(data->mlx, data->map->width * data->sprite_size, 
 							data->map->height * data->sprite_size, "so_long");
+	data->enemy = ft_init_enemy(data->mlx);
 	return (data);
 
 }
@@ -238,7 +255,7 @@ void	ft_move(int *comp, int set, t_player *player)
 {
 	*comp += set;
 	player->move +=1;
-	ft_printf("%d\n", player->move);
+	// ft_printf("%d\n", player->move);
 }
 
 void	ft_free_map(char **map)
@@ -258,7 +275,11 @@ void	ft_destroy_img(t_data *data)
 	mlx_destroy_image(data->mlx, data->player->img_r->mlx_img);
 	mlx_destroy_image(data->mlx, data->player->img_l->mlx_img);
 	mlx_destroy_image(data->mlx, data->player->img_f->mlx_img);
+	mlx_destroy_image(data->mlx, data->enemy->img_b->mlx_img);
+	mlx_destroy_image(data->mlx, data->enemy->img_f->mlx_img);
 	mlx_destroy_image(data->mlx, data->assets->collec->mlx_img);
+	mlx_destroy_image(data->mlx, data->assets->collec2->mlx_img);
+	mlx_destroy_image(data->mlx, data->assets->collec3->mlx_img);
 	mlx_destroy_image(data->mlx, data->assets->wall->mlx_img);
 	mlx_destroy_image(data->mlx, data->assets->floor->mlx_img);
 	mlx_destroy_image(data->mlx, data->assets->exit->mlx_img);
@@ -273,8 +294,13 @@ void	ft_free_player_assets(t_data *data)
 	free(data->player->img_f);
 	free(data->assets->wall);
 	free(data->assets->collec);
+	free(data->assets->collec2);
+	free(data->assets->collec3);
 	free(data->assets->exit);
 	free(data->assets->floor);
+	free(data->enemy->img_b);
+	free(data->enemy->img_f);
+	free(data->enemy);
 	free(data->assets);
 	free(data->player);
 }
@@ -307,8 +333,32 @@ void	ft_on_exit(t_data *data)
 		ft_printf("YOU MUST COLLECT ALL ITEMS !\n");
 }
 
+int	ft_quit(t_data *data)
+{
+	mlx_loop_end(data->mlx);
+	ft_free_mlx(data);
+	exit(0);
+}
+
+void	ft_check_enemy(t_data *data, int dir)
+{
+	if (dir == LEFT)
+		if (data->map->map[data->player->y][data->player->x - 1] == 'S')
+			ft_quit(data);
+	if (dir == RIGHT)
+		if (data->map->map[data->player->y][data->player->x + 1] == 'S')
+			ft_quit(data);
+	if (dir == UP)
+		if (data->map->map[data->player->y - 1][data->player->x] == 'S')
+			ft_quit(data);
+	if (dir == DOWN)
+		if (data->map->map[data->player->y + 1][data->player->x] == 'S')
+			ft_quit(data);
+}
+
 void	ft_up(t_data *data)
 {
+	ft_check_enemy(data, UP);
 	if (data->map->map[data->player->y - 1][data->player->x] == 'C')
 		data->player->nb_col += 1;
 	else if (data->map->map[data->player->y - 1][data->player->x] == 'E')
@@ -337,6 +387,7 @@ void	ft_up(t_data *data)
 
 void	ft_down(t_data *data)
 {
+	ft_check_enemy(data, DOWN);
 	if (data->map->map[data->player->y + 1][data->player->x] == 'C')
 		data->player->nb_col += 1;
 	else if (data->map->map[data->player->y + 1][data->player->x] == 'E')
@@ -365,6 +416,7 @@ void	ft_down(t_data *data)
 
 void	ft_left(t_data *data)
 {
+	ft_check_enemy(data, LEFT);
 	if (data->map->map[data->player->y][data->player->x - 1] == 'C')
 		data->player->nb_col += 1;
 	else if (data->map->map[data->player->y][data->player->x - 1] == 'E')
@@ -393,6 +445,7 @@ void	ft_left(t_data *data)
 
 void	ft_right(t_data *data)
 {
+	ft_check_enemy(data, RIGHT);
 	if (data->map->map[data->player->y][data->player->x + 1] == 'C')
 		data->player->nb_col += 1;
 	else if (data->map->map[data->player->y][data->player->x + 1] == 'E')
@@ -419,11 +472,115 @@ void	ft_right(t_data *data)
 	mlx_put_image_to_window(data->mlx, data->win, data->img->mlx_img, 0, 0);
 }
 
-int	ft_quit(t_data *data)
+
+
+void	ft_do_move_enemy(t_data *data, int x, int y, int dir)
 {
-	mlx_loop_end(data->mlx);
-	ft_free_mlx(data);
-	exit(0);
+	if (dir == DOWN)
+	{
+		if (data->map->map[y + 1][x] == 'C')
+		{
+			data->enemy->on_wall = 1;
+			return ;
+		}
+		if (data->map->map[y + 1][x] == 'P')
+			ft_quit(data);
+		data->map->map[y][x] = '0';
+		ft_paint(data->assets->floor, data->img, x, y);
+		data->map->map[y + 1][x] = 'S';
+		ft_paint(data->enemy->img_f, data->img, x, y + 1);
+		if (data->map->map[y + 2][x] == '1')
+			data->enemy->on_wall = 1;
+	}
+	else if (dir == UP)
+	{
+		if (data->map->map[y - 1][x] == 'C')
+		{
+			data->enemy->on_wall = 0;
+			return ;
+		}
+		if (data->map->map[y - 1][x] == 'P')
+			ft_quit(data);
+		data->map->map[y][x] = '0';
+		ft_paint(data->assets->floor, data->img, x, y);
+		data->map->map[y - 1][x] = 'S';
+		ft_paint(data->enemy->img_b, data->img, x, y - 1);
+		if (data->map->map[y - 2][x] == '1')
+			data->enemy->on_wall = 0;
+	}
+}
+
+void	ft_anim_enemy(t_data *data, int x, int y)
+{
+	if ((data->map->map[y - 1][x] == 'P' && data->enemy->dir == UP) || (data->map->map[y][x] == 'P' && data->enemy->dir == DOWN))
+			ft_quit(data);
+	if (data->e_frame == 25)
+	{	
+		if (data->map->map[y + 1][x] != '1' && data->enemy->on_wall == 0)
+		{
+			ft_do_move_enemy(data, x, y, DOWN);
+			data->enemy->dir = DOWN;
+		}
+		else if (data->map->map[y - 1][x] != '1' && data->enemy->on_wall == 1)
+		{
+			ft_do_move_enemy(data, x, y, UP);
+			data->enemy->dir = UP;
+		}
+		else
+			data->enemy->on_wall = 1;
+		data->e_frame = 0;
+	}
+}
+
+void	ft_anim_pot(t_data *data, int x, int y)
+{
+	if (data->c_frame == 1)
+	{
+		ft_paint(data->assets->floor, data->img, x, y);
+		ft_paint(data->assets->collec, data->img, x, y);
+	}
+	if (data->c_frame == 100)
+		ft_paint(data->assets->collec2, data->img, x, y);
+	if (data->c_frame == 150)
+		ft_paint(data->assets->collec3, data->img, x, y);
+	if (data->c_frame == 200)
+	{
+		ft_paint(data->assets->collec2, data->img, x, y);
+	}
+	if (data->c_frame == 250)
+		data->c_frame = 0;
+}
+
+void	ft_do_anim(t_data *data)
+{
+	int	x;
+	int	y;
+	data->c_frame += 1;
+	data->e_frame += 1;
+	y = -1;
+	while (++y < data->map->height)
+	{
+		x = -1;
+		while (++x < data->map->width)
+		{
+			if (data->map->map[y][x] == 'C')
+				ft_anim_pot(data, x, y);
+			else if (data->map->map[y][x] == 'S')
+				ft_anim_enemy(data, x, y);
+		}		
+	}
+	
+}
+
+int	ft_animations(t_data *data)
+{
+	if (data->map->map[data->player->y][data->player->x] == 'C')
+		data->map->map[data->player->y][data->player->x] = '0';
+	ft_do_anim(data);
+	mlx_put_image_to_window(data->mlx, data->win, data->img->mlx_img, 0, 0);
+	ft_print_steps(data);
+	ft_print_collec(data);
+	return 0;
 }
 
 int	ft_key_hook(int keycode, t_data *data)
@@ -442,6 +599,13 @@ int	ft_key_hook(int keycode, t_data *data)
 		ft_down(data);
 	else if (keycode == 65307)
 		ft_quit(data);
+	// int i = 0;
+	// while(data->map->map[i])
+	// {
+	// 	ft_printf("%s\n", data->map->map[i]);
+	// 	i++;
+	// }
+	// ft_printf("\n");
 	ft_print_steps(data);
 	ft_print_collec(data);
 	return (0);
@@ -454,9 +618,10 @@ int	main(int ac, char **av)
 	(void)ac;
 	data = ft_init_data(av[1]);
 	ft_render_map(data);
+	data->c_frame = 0;
+	data->e_frame = 0;
 	mlx_hook(data->win, 2, (1L << 0), ft_key_hook, data);
-	mlx_hook(data->win, 17, (1L << 0), ft_quit, data);
-	// mlx_loop_hook(data->mlx, ft_key_hook, data);
+	mlx_loop_hook(data->mlx, ft_animations, data);
+	mlx_hook(data->win, 17, (1L << 5), ft_quit, data);
 	mlx_loop(data->mlx);
-
 }

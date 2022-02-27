@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   so_long.h                                          :+:      :+:    :+:   */
+/*   so_long_bonus.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/16 18:44:55 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/26 12:42:19 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/27 15:06:22 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ typedef struct s_assets
     t_img	*floor;
     t_img	*wall;
     t_img	*collec;
+	t_img	*collec2;
+	t_img	*collec3;
 	t_img	*exit;
 }	t_assets;
 
@@ -66,15 +68,27 @@ typedef struct s_player
 
 }	t_player;
 
+typedef struct s_enemy
+{
+	t_img	*img_b;
+	t_img	*img_f;
+	int		dir;
+	int		on_wall;
+}	t_enemy;
+
+
 typedef	struct s_data
 {
 	t_assets	*assets;
 	t_map		*map;
 	t_img		*img;
 	t_player	*player;
+	t_enemy		*enemy;
 	int			sprite_size;
 	void		*mlx;
 	void		*win;
+	int			c_frame;
+	int			e_frame;
 }	t_data;
 
 # define UP 1

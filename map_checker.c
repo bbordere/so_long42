@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 10:01:39 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/25 13:02:11 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/27 11:11:53 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	ft_char_in(char *str, t_map *map)
 	i = -1;
 	while (str[++i])
 		if (str[i] != '1' && str[i] != '0' && str[i] != 'C' 
-			&& str[i] != 'E' && str[i] != 'P')
+			&& str[i] != 'E' && str[i] != 'P' && str[i] != 'S')
 			return (-1);
 	i = -1;
 	while (str[++i])
