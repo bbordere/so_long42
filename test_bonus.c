@@ -6,11 +6,39 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 16:43:15 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/27 20:08:44 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/28 16:28:24 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long_bonus.h"
+
+void		*ft_free_img(t_img	*img, void *mlx)
+{
+	if (img->addr)
+		free(img->addr);
+	if (img->mlx_img)
+		mlx_destroy_image(mlx, img->mlx_img);
+	free(img);
+	return (NULL);
+}
+
+void		*ft_free_assets(t_assets *assets, void *mlx)
+{
+	if (assets->collec2)
+		ft_free_img(assets->collec2, mlx);
+	if (assets->collec)
+		ft_free_img(assets->collec, mlx);
+	if (assets->collec3)
+		ft_free_img(assets->collec3, mlx);
+	if (assets->wall)
+		ft_free_img(assets->wall, mlx);
+	if (assets->exit)
+		ft_free_img(assets->exit, mlx);
+	if (assets->floor)
+		ft_free_img(assets->floor, mlx);
+	free(assets);
+	return (NULL);
+}
 
 t_img		*ft_init_img(void *mlx, char *path, int width, int height)
 {
@@ -26,6 +54,8 @@ t_img		*ft_init_img(void *mlx, char *path, int width, int height)
 	else
 		img->mlx_img = mlx_new_image(mlx, SPRITE_SIZE * width, SPRITE_SIZE * height);
 	img->addr = mlx_get_data_addr(img->mlx_img, &img->bpp, &img->line_len, &img->endian);
+	if (!img->addr || !img->mlx_img)
+		return (ft_free_img(img, mlx));
 	return (img);
 }
 
@@ -42,7 +72,20 @@ t_assets    *ft_init_assets(void *mlx)
 	asset->collec2 = ft_init_img(mlx, "assets/potion2.xpm", 0, 0);
 	asset->collec3 = ft_init_img(mlx, "assets/potion3.xpm", 0, 0);
 	asset->exit = ft_init_img(mlx, "assets/exit.xpm", 0, 0);
+	if (!asset->collec2 || !asset->collec3 || !asset->collec || !asset->exit || 
+			!asset->wall || !asset->floor)
+		return (ft_free_assets);
 	return (asset);
+}
+
+void		*ft_free_enemy(t_enemy *enemy, void *mlx)
+{
+	if (enemy->img_b)
+		ft_free_img(enemy->img_b, mlx);
+	if (enemy->img_f)
+		ft_free_img(enemy->img_f, mlx);
+	free(enemy);	
+	return (NULL);
 }
 
 t_enemy		*ft_init_enemy(void *mlx)
@@ -54,6 +97,8 @@ t_enemy		*ft_init_enemy(void *mlx)
 		return (NULL);
 	enemy->img_b = ft_init_img(mlx, "assets/enemy_b.xpm", 0, 0);
 	enemy->img_f = ft_init_img(mlx, "assets/enemy_F.xpm", 0, 0);
+	if (!enemy->img_b || !enemy->img_f)
+		return (ft_free_enemy(enemy, mlx));
 	enemy->dir = 0;
 	enemy->on_wall = 0;
 	return (enemy);
@@ -77,14 +122,12 @@ char	**ft_fill_map(t_map *o_map)
 		str = ft_strjoin(str, line);
 		if (!str)
 			return (NULL);
-			//error free all
 		free(line);
 		line = get_next_line(o_map->fd_map);
 	}
 	map = ft_split(str, '\n');
 	if (!map)
 		return (NULL);
-		//error free all
 	free(str);
 	return (map);
 }
@@ -105,6 +148,8 @@ t_map	*ft_init_map(char *file)
 	map->start = 0;
 	map->exit = 0;
 	map->map = ft_fill_map(map);
+	if (map->map == NULL)
+		free(map);
 	return (map);
 }
 
@@ -208,10 +253,10 @@ void	ft_print_collec(t_data *data)
 	str = ft_strjoin(col, " / ");
 	str = ft_strjoin(str, item);
 	str = ft_strjoin(str, " collectibles");
-	mlx_string_put(data->mlx, data->win, 0, 25, 0xFFFFFF, str);
+	// mlx_string_put(data->mlx, data->win, 0, 25, 0xFFFFFF, str);
 	// mlx_string_put(data->mlx, data->win, 0, 25, 0xFF0000 + (data->player->nb_col % data->map->item) * 5, str);
-	// mlx_string_put(data->mlx, data->win, data->player->x - 35 + data->player->x * SPRITE_SIZE, 
-	// 				data->player->y + data->player->y * SPRITE_SIZE - 15, 0x7FF408, str);
+	mlx_string_put(data->mlx, data->win, data->player->x - 35 + data->player->x * SPRITE_SIZE, 
+					data->player->y + data->player->y * SPRITE_SIZE - 15, 0x7FF408, str);
 	free(str);
 	free(item);
 }
@@ -244,6 +289,8 @@ void	ft_render_map(t_data *data)
 				ft_paint(data->assets->exit, data->img, x, y);
 			if (data->map->map[y][x] == 'P')
 				ft_render_player(data, x, y);
+			if (data->map->map[y][x] == 'S')
+				ft_paint(data->enemy->img_f, data->img, x, y);
 		}		
 	}
 	mlx_put_image_to_window(data->mlx, data->win, data->img->mlx_img, 0, 0);
@@ -321,7 +368,6 @@ int	ft_free_mlx(t_data *data)
 
 void	ft_on_exit(t_data *data)
 {
-	ft_paint(data->assets->exit, data->img, data->player->x, data->player->y);
 	if (data->player->nb_col == data->map->item)
 	{
 		mlx_loop_end(data->mlx);
@@ -333,27 +379,37 @@ void	ft_on_exit(t_data *data)
 		ft_printf("YOU MUST COLLECT ALL ITEMS !\n");
 }
 
-int	ft_quit(t_data *data)
+
+
+int	ft_quit(t_data *data, char *msg)
 {
+	if (msg)
+		ft_printf("%s\n", msg);
 	mlx_loop_end(data->mlx);
 	ft_free_mlx(data);
 	exit(0);
+}
+
+int	ft_notify(t_data *data)
+{
+	ft_quit(data, NULL);
+	return (0);
 }
 
 void	ft_check_enemy(t_data *data, int dir)
 {
 	if (dir == LEFT)
 		if (data->map->map[data->player->y][data->player->x - 1] == 'S')
-			ft_quit(data);
+			ft_quit(data, "GAME OVER !");
 	if (dir == RIGHT)
 		if (data->map->map[data->player->y][data->player->x + 1] == 'S')
-			ft_quit(data);
+			ft_quit(data, "GAME OVER !");
 	if (dir == UP)
 		if (data->map->map[data->player->y - 1][data->player->x] == 'S')
-			ft_quit(data);
+			ft_quit(data, "GAME OVER !");
 	if (dir == DOWN)
 		if (data->map->map[data->player->y + 1][data->player->x] == 'S')
-			ft_quit(data);
+			ft_quit(data, "GAME OVER !");
 }
 
 void	ft_up(t_data *data)
@@ -478,13 +534,13 @@ void	ft_do_move_enemy(t_data *data, int x, int y, int dir)
 {
 	if (dir == DOWN)
 	{
-		if (data->map->map[y + 1][x] == 'C')
+		if (data->map->map[y + 1][x] == 'C' || data->map->map[y + 1][x] == 'S')
 		{
 			data->enemy->on_wall = 1;
 			return ;
 		}
 		if (data->map->map[y + 1][x] == 'P')
-			ft_quit(data);
+			ft_quit(data, "GAME OVER !");
 		data->map->map[y][x] = '0';
 		ft_paint(data->assets->floor, data->img, x, y);
 		data->map->map[y + 1][x] = 'S';
@@ -500,7 +556,7 @@ void	ft_do_move_enemy(t_data *data, int x, int y, int dir)
 			return ;
 		}
 		if (data->map->map[y - 1][x] == 'P')
-			ft_quit(data);
+			ft_quit(data, "GAME OVER !");
 		data->map->map[y][x] = '0';
 		ft_paint(data->assets->floor, data->img, x, y);
 		data->map->map[y - 1][x] = 'S';
@@ -513,8 +569,8 @@ void	ft_do_move_enemy(t_data *data, int x, int y, int dir)
 void	ft_anim_enemy(t_data *data, int x, int y)
 {
 	if ((data->map->map[y - 1][x] == 'P' && data->enemy->dir == UP) || (data->map->map[y][x] == 'P' && data->enemy->dir == DOWN))
-			ft_quit(data);
-	if (data->e_frame == 25)
+			ft_quit(data, "GAME OVER !");
+	if (data->e_tick == 300)
 	{	
 		if (data->map->map[y + 1][x] != '1' && data->enemy->on_wall == 0)
 		{
@@ -528,35 +584,35 @@ void	ft_anim_enemy(t_data *data, int x, int y)
 		}
 		else
 			data->enemy->on_wall = 1;
-		data->e_frame = 0;
+		data->e_tick = 0;
 	}
+	data->e_tick += 1;
 }
 
 void	ft_anim_pot(t_data *data, int x, int y)
 {
-	if (data->c_frame == 1)
+	if (data->c_tick == 1)
 	{
 		ft_paint(data->assets->floor, data->img, x, y);
 		ft_paint(data->assets->collec, data->img, x, y);
 	}
-	if (data->c_frame == 100)
+	if (data->c_tick == 200)
 		ft_paint(data->assets->collec2, data->img, x, y);
-	if (data->c_frame == 150)
+	if (data->c_tick == 300)
 		ft_paint(data->assets->collec3, data->img, x, y);
-	if (data->c_frame == 200)
+	if (data->c_tick == 400)
 	{
 		ft_paint(data->assets->collec2, data->img, x, y);
 	}
-	if (data->c_frame == 250)
-		data->c_frame = 0;
+	if (data->c_tick == 500)
+		data->c_tick = 0;
 }
 
 void	ft_do_anim(t_data *data)
 {
 	int	x;
 	int	y;
-	data->c_frame += 1;
-	data->e_frame += 1;
+	data->c_tick += 1;
 	y = -1;
 	while (++y < data->map->height)
 	{
@@ -586,19 +642,15 @@ int	ft_animations(t_data *data)
 int	ft_key_hook(int keycode, t_data *data)
 {
 	if (keycode == 'd' || keycode == 65363)
-		// ft_check_pos(data, RIGHT);
 		ft_right(data);
 	else if (keycode == 'a' || keycode == 65361)
-		// ft_check_pos(data, LEFT);
 		ft_left(data);
 	else if (keycode == 'w' || keycode == 65362)
-		// ft_check_pos(data, UP);
 		ft_up(data);
 	else if (keycode == 's'|| keycode == 65364)
-		// ft_check_pos(data, DOWN);
 		ft_down(data);
 	else if (keycode == 65307)
-		ft_quit(data);
+		ft_quit(data, NULL);
 	// int i = 0;
 	// while(data->map->map[i])
 	// {
@@ -618,10 +670,10 @@ int	main(int ac, char **av)
 	(void)ac;
 	data = ft_init_data(av[1]);
 	ft_render_map(data);
-	data->c_frame = 0;
-	data->e_frame = 0;
+	data->c_tick = 0;
+	data->e_tick = 0;
 	mlx_hook(data->win, 2, (1L << 0), ft_key_hook, data);
 	mlx_loop_hook(data->mlx, ft_animations, data);
-	mlx_hook(data->win, 17, (1L << 5), ft_quit, data);
+	mlx_hook(data->win, 17, (1L << 2), ft_notify, data);
 	mlx_loop(data->mlx);
 }

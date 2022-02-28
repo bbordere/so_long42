@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/16 18:44:55 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/27 15:06:22 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/02/28 11:51:55 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,8 +87,8 @@ typedef	struct s_data
 	int			sprite_size;
 	void		*mlx;
 	void		*win;
-	int			c_frame;
-	int			e_frame;
+	int			c_tick;
+	int			e_tick;
 }	t_data;
 
 # define UP 1
