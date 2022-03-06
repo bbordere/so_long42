@@ -6,17 +6,19 @@
 #    By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/16 20:31:26 by bbordere          #+#    #+#              #
-#    Updated: 2022/02/27 10:50:15 by bbordere         ###   ########.fr        #
+#    Updated: 2022/03/06 23:34:35 by bbordere         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = gcc
 
-CFLAGS = -Wall -Werror -Wextra -g3
+INCLUDES = includes/
+
+CFLAGS = -Wall -Werror -Wextra -I $(INCLUDES)
 
 NAME = so_long
 
-FILES = test.c map_checker.c
+FILES = src/test.c map_checker.c src/cleaning.c src/init.c src/map.c src/paint.c src/exiting.c src/move.c
 
 FILES_BONUS = test_bonus.c map_checker.c
 

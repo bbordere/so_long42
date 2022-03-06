@@ -6,11 +6,11 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 10:01:39 by bbordere          #+#    #+#             */
-/*   Updated: 2022/02/27 11:11:53 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/03/06 23:25:52 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "so_long.h"
+#include "so_long_bonus.h"
 
 int	ft_char_in(char *str, t_map *map)
 {
@@ -30,8 +30,7 @@ int	ft_char_in(char *str, t_map *map)
 			map->exit += 1;
 		if (str[i] == 'P')
 			map->start += 1;
-	}
-	
+	}	
 	return (0);
 }
 
