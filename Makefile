@@ -6,7 +6,7 @@
 #    By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/16 20:31:26 by bbordere          #+#    #+#              #
-#    Updated: 2022/03/07 11:05:18 by bbordere         ###   ########.fr        #
+#    Updated: 2022/03/07 22:23:24 by bbordere         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ CC = gcc
 
 INCLUDES = includes/
 
-CFLAGS = -Wall -Werror -Wextra -I $(INCLUDES)
+CFLAGS = -Wall -Werror -Wextra -I $(INCLUDES) -g3
 
 NAME = so_long
 
@@ -41,7 +41,7 @@ $(NAME): $(OBJS)
 	@$(MAKE) -s all -C libft
 	@printf '\033[0;32mLibft compiled sucessfully !\033[0m\n'
 	@printf '\033[0;33mCompiling so_long\033[0m\n'
-	@$(CC) $(OBJS) libft/libft.a minilibx-linux/libmlx.a -lXext -lX11 -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJS) libft/libft.a minilibx-linux/libmlx.a -lXext -lX11 -o $(NAME)
 	@printf '\033[0;32mso_long compiled sucessfully ! Have fun x)\033[0m\n'
 
 all: $(NAME)

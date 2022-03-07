@@ -12,6 +12,60 @@
 
 #include "so_long.h"
 
+void	*ft_free_player(t_player *player, void *mlx)
+{
+	if (player->img_b)
+		mlx_destroy_image(mlx, player->img_b->mlx_img);
+	if (player->img_f)
+		mlx_destroy_image(mlx, player->img_f->mlx_img);
+	if (player->img_l)
+		mlx_destroy_image(mlx, player->img_l->mlx_img);
+	if (player->img_r)
+		mlx_destroy_image(mlx, player->img_r->mlx_img);
+	free(player->img_b);
+	free(player->img_l);
+	free(player->img_r);
+	free(player->img_f);
+	free(player);
+	return (NULL);
+}
+
+void	*ft_free_assets(t_assets *assets, void *mlx)
+{
+	if (assets->collec)
+		mlx_destroy_image(mlx, assets->collec->mlx_img);
+	if (assets->collec2)
+		mlx_destroy_image(mlx, assets->collec2->mlx_img);
+	if (assets->collec3)
+		mlx_destroy_image(mlx, assets->collec3->mlx_img);
+	if (assets->wall)
+		mlx_destroy_image(mlx, assets->wall->mlx_img);
+	if (assets->exit)
+		mlx_destroy_image(mlx, assets->exit->mlx_img);
+	if (assets->floor)
+		mlx_destroy_image(mlx, assets->floor->mlx_img);
+	free(assets->wall);
+	free(assets->collec);
+	free(assets->collec2);
+	free(assets->collec3);
+	free(assets->floor);
+	free(assets->exit);
+	free(assets);
+	return (NULL);
+}
+
+void	*ft_free_enemy(t_enemy *enemy, void *mlx)
+{
+	if (enemy->img_b)
+		mlx_destroy_image(mlx, enemy->img_b->mlx_img);
+	if (enemy->img_f)
+		mlx_destroy_image(mlx, enemy->img_f->mlx_img);
+	free(enemy->img_b);
+	free(enemy->img_f);
+	free(enemy);
+	return (NULL);
+}
+
 void	*ft_free_data(t_data *data)
 {
 	if (data->map)
@@ -22,69 +76,18 @@ void	*ft_free_data(t_data *data)
 	if (data->assets)
 		ft_free_assets(data->assets, data->mlx);
 	if (data->img)
-		ft_free_img(data->img, data->mlx);
+		mlx_destroy_image(data->mlx, data->img->mlx_img);
 	if (data->player)
-		ft_free(data->player);
+		ft_free_player(data->player, data->mlx);
 	if (data->enemy)
 		ft_free_enemy(data->enemy, data->mlx);
 	if (data->win)
 	{
 		mlx_destroy_window(data->mlx, data->win);
+		mlx_destroy_display(data->mlx);
 		free(data->mlx);
-		free(data->win);
 	}
-	free(data->mlx);
-	return (NULL);
-}
-
-void	*ft_free_player(t_player *player, void *mlx)
-{
-	if (player->img_b)
-		ft_free_img(player->img_b, mlx);
-	if (player->img_f)
-		ft_free_img(player->img_b, mlx);
-	if (player->img_l)
-		ft_free_img(player->img_b, mlx);
-	if (player->img_r)
-		ft_free_img(player->img_b, mlx);
-	free(player);
-	return (NULL);
-}
-
-void	*ft_free_img(t_img	*img, void *mlx)
-{
-	if (img->addr)
-		free(img->addr);
-	if (img->mlx_img)
-		mlx_destroy_image(mlx, img->mlx_img);
-	free(img);
-	return (NULL);
-}
-
-void	*ft_free_assets(t_assets *assets, void *mlx)
-{
-	if (assets->collec2)
-		ft_free_img(assets->collec2, mlx);
-	if (assets->collec)
-		ft_free_img(assets->collec, mlx);
-	if (assets->collec3)
-		ft_free_img(assets->collec3, mlx);
-	if (assets->wall)
-		ft_free_img(assets->wall, mlx);
-	if (assets->exit)
-		ft_free_img(assets->exit, mlx);
-	if (assets->floor)
-		ft_free_img(assets->floor, mlx);
-	free(assets);
-	return (NULL);
-}
-
-void	*ft_free_enemy(t_enemy *enemy, void *mlx)
-{
-	if (enemy->img_b)
-		ft_free_img(enemy->img_b, mlx);
-	if (enemy->img_f)
-		ft_free_img(enemy->img_f, mlx);
-	free(enemy);
+	free(data->img);
+	free(data);
 	return (NULL);
 }

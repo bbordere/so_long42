@@ -26,10 +26,12 @@ t_img	*ft_init_img(void *mlx, char *path, int width, int height)
 	else
 		img->mlx_img = mlx_new_image(mlx, SPRITE_SIZE * width,
 				SPRITE_SIZE * height);
+	if (!img->mlx_img)
+		return (ft_free(img));
 	img->addr = mlx_get_data_addr(img->mlx_img, &img->bpp,
 			&img->line_len, &img->endian);
-	if (!img->addr || !img->mlx_img)
-		return (ft_free_img(img, mlx));
+	if (!img->addr)
+		return (NULL);
 	return (img);
 }
 
@@ -98,10 +100,12 @@ t_data	*ft_init_data(char *path)
 		return (NULL);
 	data->map = ft_init_map(path);
 	if (!data->map)
-		ft_error_exit_msg(data->map, data, "/!\\ Error initialization map !\n");
+		ft_error_exit_msg(data->map, data, "/!\\Error initialization map !\n");
 	if (ft_check_map_char(data->map) == -1)
 		ft_error_exit_msg(data, NULL, "\n");
 	data->mlx = mlx_init();
+	if (!data->mlx)
+		return (NULL);
 	data->sprite_size = SPRITE_SIZE;
 	data->assets = ft_init_assets(data->mlx);
 	data->img = ft_init_img(data->mlx, NULL,

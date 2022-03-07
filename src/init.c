@@ -26,10 +26,12 @@ t_img	*ft_init_img(void *mlx, char *path, int width, int height)
 	else
 		img->mlx_img = mlx_new_image(mlx, SPRITE_SIZE * width,
 				SPRITE_SIZE * height);
+	if (!img->mlx_img)
+		return (ft_free(img));
 	img->addr = mlx_get_data_addr(img->mlx_img, &img->bpp,
 			&img->line_len, &img->endian);
-	if (!img->addr || !img->mlx_img)
-		return (ft_free_img(img, mlx));
+	if (!img->addr)
+		return (NULL);
 	return (img);
 }
 
@@ -91,7 +93,7 @@ t_data	*ft_init_data(char *path)
 			data->map->width, data->map->height);
 	data->player = ft_init_player(data->mlx);
 	data->win = mlx_new_window(data->mlx, data->map->width * data->sprite_size,
-			 data->map->height * data->sprite_size, "so_long");
+			data->map->height * data->sprite_size, "so_long");
 	if (!data->map || !data->assets || !data->img || !data->player
 		|| !data->win)
 		return (ft_free_data(data));

@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 10:01:39 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/07 10:55:36 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/03/07 16:54:38 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 int	ft_char_in(char *str, t_map *map)
 {
-	int i;
+	int	i;
 
 	i = -1;
 	while (str[++i])
-		if (str[i] != '1' && str[i] != '0' && str[i] != 'C' 
+		if (str[i] != '1' && str[i] != '0' && str[i] != 'C'
 			&& str[i] != 'E' && str[i] != 'P' && str[i] != 'S')
 			return (-1);
 	i = -1;
@@ -36,7 +36,7 @@ int	ft_char_in(char *str, t_map *map)
 
 int	ft_check_wall(t_map *map)
 {
-	int i;
+	int	i;
 
 	i = -1;
 	while (map->map[0][++i])
@@ -50,7 +50,7 @@ int	ft_check_wall(t_map *map)
 	while (map->map[map->height - 1][++i])
 		if (map->map[map->height - 1][i] != '1')
 			return (-1);
-	return (0);    
+	return (0);
 }
 
 int	ft_error(char *str, t_map *map)
@@ -72,19 +72,20 @@ void	ft_check_extension(char *file)
 
 int	ft_check_map_char(t_map *map)
 {
-	int i;
+	int	i;
 
 	i = -1;
 	if (ft_check_wall(map) == -1)
-		return (ft_error(" _ \n/!\\ Map must be surrounded by wall !\n‾‾‾\n", map));
+		return (ft_error("/!\\ Map must be surrounded by wall !\n", map));
 	while (map->map[++i])
 	{
 		if (ft_strlen(map->map[i]) != (size_t) map->width)
-			return (ft_error(" _ \n/!\\ Map must be rectangular !\n‾‾‾\n", map));
+			return (ft_error("/!\\ Map must be rectangular !\n", map));
 		if (ft_char_in(map->map[i], map) == -1)
-			return (ft_error(" _ \n/!\\ Map contains invalid char !\n‾‾‾\n", map));			
+			return (ft_error("/!\\ Map contains invalid char !\n", map));
 	}
 	if (map->item < 1 || map->exit < 1 || map->start < 1)
-		return (ft_error(" _ \n/!\\ Map must contains almost one item, exit and player!\n-\n", map));
+		return (ft_error("/!\\ Map must contains almost one item,\
+				 exit and player!\n", map));
 	return (0);
 }
