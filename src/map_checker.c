@@ -6,11 +6,11 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 10:01:39 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/06 23:25:52 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/03/07 10:55:36 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "so_long_bonus.h"
+#include "so_long.h"
 
 int	ft_char_in(char *str, t_map *map)
 {
@@ -59,6 +59,15 @@ int	ft_error(char *str, t_map *map)
 	free(map);
 	ft_printf("Error\n%s", str);
 	return (-1);
+}
+
+void	ft_check_extension(char *file)
+{
+	if (!ft_strnstr(file + (ft_strlen(file) - 4), ".ber", 4))
+	{
+		ft_printf("/!\\ Wrong map extension !\n");
+		exit(1);
+	}
 }
 
 int	ft_check_map_char(t_map *map)

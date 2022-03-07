@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/06 20:34:48 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/06 20:34:48 by bbordere         ###   ########.fr       */
+/*   Created: 2022/03/07 09:26:15 by bbordere          #+#    #+#             */
+/*   Updated: 2022/03/07 09:26:15 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ void	*ft_free_data(t_data *data)
 		ft_free_img(data->img, data->mlx);
 	if (data->player)
 		ft_free(data->player);
+	if (data->enemy)
+		ft_free_enemy(data->enemy, data->mlx);
 	if (data->win)
 	{
 		mlx_destroy_window(data->mlx, data->win);
@@ -35,10 +37,17 @@ void	*ft_free_data(t_data *data)
 	return (NULL);
 }
 
-void	*ft_free(void *ptr)
+void	*ft_free_player(t_player *player, void *mlx)
 {
-	free(ptr);
-	ptr = NULL;
+	if (player->img_b)
+		ft_free_img(player->img_b, mlx);
+	if (player->img_f)
+		ft_free_img(player->img_b, mlx);
+	if (player->img_l)
+		ft_free_img(player->img_b, mlx);
+	if (player->img_r)
+		ft_free_img(player->img_b, mlx);
+	free(player);
 	return (NULL);
 }
 
@@ -54,8 +63,12 @@ void	*ft_free_img(t_img	*img, void *mlx)
 
 void	*ft_free_assets(t_assets *assets, void *mlx)
 {
+	if (assets->collec2)
+		ft_free_img(assets->collec2, mlx);
 	if (assets->collec)
 		ft_free_img(assets->collec, mlx);
+	if (assets->collec3)
+		ft_free_img(assets->collec3, mlx);
 	if (assets->wall)
 		ft_free_img(assets->wall, mlx);
 	if (assets->exit)
@@ -66,16 +79,12 @@ void	*ft_free_assets(t_assets *assets, void *mlx)
 	return (NULL);
 }
 
-void	*ft_free_player(t_player *player, void *mlx)
+void	*ft_free_enemy(t_enemy *enemy, void *mlx)
 {
-	if (player->img_b)
-		ft_free_img(player->img_b, mlx);
-	if (player->img_f)
-		ft_free_img(player->img_b, mlx);
-	if (player->img_l)
-		ft_free_img(player->img_b, mlx);
-	if (player->img_r)
-		ft_free_img(player->img_b, mlx);
-	free(player);
+	if (enemy->img_b)
+		ft_free_img(enemy->img_b, mlx);
+	if (enemy->img_f)
+		ft_free_img(enemy->img_f, mlx);
+	free(enemy);
 	return (NULL);
 }

@@ -5,22 +5,32 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/06 23:33:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/06 23:33:52 by bbordere         ###   ########.fr       */
+/*   Created: 2022/03/07 09:43:58 by bbordere          #+#    #+#             */
+/*   Updated: 2022/03/07 09:43:58 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
 
-void	ft_move(int *comp, int set, t_player *player)
+void	ft_check_enemy(t_data *data, int dir)
 {
-	*comp += set;
-	player->move += 1;
-	ft_printf("%d\n", player->move);
+	if (dir == LEFT)
+		if (data->map->map[data->player->y][data->player->x - 1] == 'S')
+			ft_quit_msg(data, "GAME OVER !");
+	if (dir == RIGHT)
+		if (data->map->map[data->player->y][data->player->x + 1] == 'S')
+			ft_quit_msg(data, "GAME OVER !");
+	if (dir == UP)
+		if (data->map->map[data->player->y - 1][data->player->x] == 'S')
+			ft_quit_msg(data, "GAME OVER !");
+	if (dir == DOWN)
+		if (data->map->map[data->player->y + 1][data->player->x] == 'S')
+			ft_quit_msg(data, "GAME OVER !");
 }
 
 void	ft_up(t_data *data)
 {
+	ft_check_enemy(data, UP);
 	if (data->map->map[data->player->y - 1][data->player->x] == 'C')
 		data->player->nb_col += 1;
 	else if (data->map->map[data->player->y - 1][data->player->x] == 'E')
@@ -35,6 +45,7 @@ void	ft_up(t_data *data)
 
 void	ft_down(t_data *data)
 {
+	ft_check_enemy(data, DOWN);
 	if (data->map->map[data->player->y + 1][data->player->x] == 'C')
 		data->player->nb_col += 1;
 	else if (data->map->map[data->player->y + 1][data->player->x] == 'E')
@@ -49,6 +60,7 @@ void	ft_down(t_data *data)
 
 void	ft_left(t_data *data)
 {
+	ft_check_enemy(data, LEFT);
 	if (data->map->map[data->player->y][data->player->x - 1] == 'C')
 		data->player->nb_col += 1;
 	else if (data->map->map[data->player->y][data->player->x - 1] == 'E')
@@ -63,6 +75,7 @@ void	ft_left(t_data *data)
 
 void	ft_right(t_data *data)
 {
+	ft_check_enemy(data, RIGHT);
 	if (data->map->map[data->player->y][data->player->x + 1] == 'C')
 		data->player->nb_col += 1;
 	else if (data->map->map[data->player->y][data->player->x + 1] == 'E')

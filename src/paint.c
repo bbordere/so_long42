@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "so_long_bonus.h"
+#include "so_long.h"
 
 unsigned int	ft_get_pixel(t_img *img, int x, int y)
 {
@@ -27,7 +27,7 @@ void	ft_put_pixel(t_img *img, int x, int y, int color)
 	char	*dst;
 
 	dst = img->addr + (y * img->line_len + x * (img->bpp / 8));
-	*(unsigned int*)dst = color;
+	*(unsigned int *)dst = color;
 }
 
 void	ft_paint(t_img *element, t_img *mlx_img, int x, int y)
@@ -44,7 +44,8 @@ void	ft_paint(t_img *element, t_img *mlx_img, int x, int y)
 		{
 			color = ft_get_pixel(element, x1, y1);
 			if (!(color == (unsigned int)(0xFF << 24)))
-				ft_put_pixel(mlx_img, (x * SPRITE_SIZE) + x1, (y * SPRITE_SIZE) + y1, color);
+				ft_put_pixel(mlx_img, (x * SPRITE_SIZE) + x1,
+					(y * SPRITE_SIZE) + y1, color);
 		}
 	}	
 }

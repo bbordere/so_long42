@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/06 20:33:35 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/06 20:33:35 by bbordere         ###   ########.fr       */
+/*   Created: 2022/03/07 09:31:15 by bbordere          #+#    #+#             */
+/*   Updated: 2022/03/07 09:31:15 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,29 @@ t_assets	*ft_init_assets(void *mlx)
 	asset->wall = ft_init_img(mlx, "assets/wall_2.xpm", 0, 0);
 	asset->floor = ft_init_img(mlx, "assets/floor.xpm", 0, 0);
 	asset->collec = ft_init_img(mlx, "assets/potion.xpm", 0, 0);
+	asset->collec2 = ft_init_img(mlx, "assets/potion2.xpm", 0, 0);
+	asset->collec3 = ft_init_img(mlx, "assets/potion3.xpm", 0, 0);
 	asset->exit = ft_init_img(mlx, "assets/exit.xpm", 0, 0);
-	if (!asset->collec || !asset->exit || !asset->wall || !asset->floor)
+	if (!asset->collec2 || !asset->collec3 || !asset->collec
+		|| !asset->exit || !asset->wall || !asset->floor)
 		return (ft_free_assets(asset, mlx));
 	return (asset);
+}
+
+t_enemy	*ft_init_enemy(void *mlx)
+{
+	t_enemy	*enemy;
+
+	enemy = malloc(sizeof(t_enemy));
+	if (!enemy)
+		return (NULL);
+	enemy->img_b = ft_init_img(mlx, "assets/enemy_b.xpm", 0, 0);
+	enemy->img_f = ft_init_img(mlx, "assets/enemy_F.xpm", 0, 0);
+	if (!enemy->img_b || !enemy->img_f)
+		return (ft_free_enemy(enemy, mlx));
+	enemy->dir = 0;
+	enemy->on_wall = 0;
+	return (enemy);
 }
 
 t_player	*ft_init_player(void *mlx)
@@ -83,17 +102,16 @@ t_data	*ft_init_data(char *path)
 	if (ft_check_map_char(data->map) == -1)
 		ft_error_exit_msg(data, NULL, "\n");
 	data->mlx = mlx_init();
-	if (!data->mlx)
-		return (NULL);
 	data->sprite_size = SPRITE_SIZE;
 	data->assets = ft_init_assets(data->mlx);
 	data->img = ft_init_img(data->mlx, NULL,
 			data->map->width, data->map->height);
 	data->player = ft_init_player(data->mlx);
 	data->win = mlx_new_window(data->mlx, data->map->width * data->sprite_size,
-			 data->map->height * data->sprite_size, "so_long");
+			data->map->height * data->sprite_size, "so_long");
+	data->enemy = ft_init_enemy(data->mlx);
 	if (!data->map || !data->assets || !data->img || !data->player
-		|| !data->win)
+		|| !data->win || !data->enemy)
 		return (ft_free_data(data));
 	return (data);
 }

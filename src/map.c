@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "so_long_bonus.h"
+#include "so_long.h"
 
 char	**ft_fill_map(t_map *o_map)
 {
@@ -40,15 +40,6 @@ char	**ft_fill_map(t_map *o_map)
 	return (map);
 }
 
-void	ft_check_extension(char *file)
-{
-	if (!ft_strnstr(file + (ft_strlen(file) - 4), ".ber", 4))
-	{
-		ft_printf("/!\\ Wrong map extension !\n");
-		exit(1);
-	}
-}
-
 t_map	*ft_init_map(char *file)
 {
 	t_map	*map;
@@ -58,7 +49,7 @@ t_map	*ft_init_map(char *file)
 		return (NULL);
 	map->fd_map = open(file, O_RDONLY);
 	if (map->fd_map == -1)
-		return (NULL);
+		return (ft_free(map));
 	map->x = 0;
 	map->y = 0;
 	map->item = 0;
@@ -66,6 +57,6 @@ t_map	*ft_init_map(char *file)
 	map->exit = 0;
 	map->map = ft_fill_map(map);
 	if (!map->map)
-		return (NULL);
+		return (ft_free(map));
 	return (map);
 }
