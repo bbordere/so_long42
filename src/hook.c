@@ -33,3 +33,10 @@ int	ft_key_hook(int keycode, t_data *data)
 		ft_quit(data);
 	return (0);
 }
+
+void	*ft_free_map_data(t_data *data)
+{
+	ft_free_map(data->map->map);
+	free(data->map);
+	return (ft_free(data));
+}

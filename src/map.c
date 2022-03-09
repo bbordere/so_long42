@@ -47,7 +47,9 @@ t_map	*ft_init_map(char *file)
 	map = malloc(sizeof(t_map));
 	if (!map)
 		return (NULL);
-	map->fd_map = open(file, O_RDONLY);
+	if (open(file, __O_DIRECTORY) > 0)
+		return (ft_free(map));
+	map->fd_map = open(file, __O_NOFOLLOW | O_RDONLY);
 	if (map->fd_map == -1)
 		return (ft_free(map));
 	map->x = 0;

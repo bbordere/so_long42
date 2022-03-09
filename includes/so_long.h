@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/16 18:44:55 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/07 10:59:44 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/03/08 12:22:27 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,5 +144,6 @@ void		ft_do_anim(t_data *data);
 int			ft_animations(t_data *data);
 int			ft_key_hook_bonus(int keycode, t_data *data);
 int			ft_notify(t_data *data);
+void		*ft_free_map_data(t_data *data);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 16:43:15 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/07 16:21:08 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/03/09 12:16:43 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,14 @@ int	main(int ac, char **av)
 
 	if (ac != 2)
 	{
-		ft_printf("/!\\ Wrong number of arguments !");
+		ft_printf("/!\\ Error\nWrong number of arguments !\n");
 		exit(1);
 	}
 	ft_check_extension(av[1]);
 	data = ft_init_data(av[1]);
 	if (!data)
 	{
-		ft_printf("/!\\Error occured while initializing data !\n");
+		ft_printf("/!\\ Error\nInitializing data !\n");
 		exit(1);
 	}
 	ft_render_map(data);

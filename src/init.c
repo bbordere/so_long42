@@ -81,12 +81,12 @@ t_data	*ft_init_data(char *path)
 		return (NULL);
 	data->map = ft_init_map(path);
 	if (!data->map)
-		ft_error_exit_msg(data->map, data, "/!\\ Error initialization map !\n");
+		ft_error_exit_msg(data->map, data, "/!\\ Error\nInitialization map !\n");
 	if (ft_check_map_char(data->map) == -1)
-		ft_error_exit_msg(data, NULL, "\n");
+		ft_error_exit_msg(data, NULL, "");
 	data->mlx = mlx_init();
 	if (!data->mlx)
-		return (NULL);
+		return (ft_free_map_data(data));
 	data->sprite_size = SPRITE_SIZE;
 	data->assets = ft_init_assets(data->mlx);
 	data->img = ft_init_img(data->mlx, NULL,
