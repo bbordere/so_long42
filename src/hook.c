@@ -15,6 +15,7 @@
 int	ft_quit(t_data *data)
 {
 	mlx_loop_end(data->mlx);
+	close(data->map->fd_map);
 	ft_free_mlx(data);
 	exit(0);
 }

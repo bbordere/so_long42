@@ -52,6 +52,7 @@ void	ft_on_exit(t_data *data)
 	{
 		mlx_loop_end(data->mlx);
 		ft_printf("YOU WIN WITH %d MOVES !\n", data->player->move);
+		close(data->map->fd_map);
 		ft_free_mlx(data);
 		exit(0);
 	}

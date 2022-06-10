@@ -59,6 +59,9 @@ t_map	*ft_init_map(char *file)
 	map->exit = 0;
 	map->map = ft_fill_map(map);
 	if (!map->map)
+	{
+		close(map->fd_map);
 		return (ft_free(map));
+	}
 	return (map);
 }

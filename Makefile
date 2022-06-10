@@ -6,7 +6,7 @@
 #    By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/16 20:31:26 by bbordere          #+#    #+#              #
-#    Updated: 2022/03/09 15:50:59 by bbordere         ###   ########.fr        #
+#    Updated: 2022/06/10 13:15:40 by bbordere         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,11 +18,13 @@ CFLAGS = -Wall -Werror -Wextra -I $(INCLUDES) -g3
 
 NAME = so_long
 
+BONUS = so_long_bonus
+
 FILES = src/main.c src/paint_move.c src/map_checker.c src/cleaning.c \
 		 src/init.c src/map.c src/paint.c src/exiting.c src/move.c src/hook.c \
 		 src/render.c src/error.c
 
-FILES_BONUS = bonus/main_bonus.c src/map_checker.c src/map.c src/paint.c \
+FILES_BONUS = bonus/main_bonus.c bonus/map_checker_bonus.c src/map.c src/paint.c \
 			bonus/init.c  bonus/cleaning.c bonus/move.c src/paint_move.c \
 			src/hook.c bonus/move_enemy.c bonus/print_infos.c bonus/render.c \
 			bonus/animations.c bonus/exiting.c bonus/hook_bonus.c src/error.c
@@ -55,6 +57,7 @@ clean:
 
 fclean : clean
 	@rm -f $(NAME)
+	@rm -f $(BONUS)
 	@$(MAKE) -s fclean -C libft
 	@printf '\033[0;32mfclean done\033[0m\n'
 
@@ -64,7 +67,7 @@ bonus: $(OBJS_BONUS)
 	@$(MAKE) -s all -C libft
 	@printf '\033[0;32mLibft compiled sucessfully !\033[0m\n'
 	@printf '\033[0;33mCompiling so_long\033[0m\n'
-	@$(CC) $(CFLAGS) $(OBJS_BONUS) libft/libft.a minilibx-linux/libmlx.a -lXext -lX11 -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJS_BONUS) libft/libft.a minilibx-linux/libmlx.a -lXext -lX11 -o $(BONUS)
 	@printf '\033[0;32mso_long compiled sucessfully ! Have fun x)\033[0m\n'
 
 re: fclean all

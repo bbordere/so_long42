@@ -71,6 +71,7 @@ void	*ft_free_data(t_data *data)
 	if (data->map)
 	{
 		ft_free_map(data->map->map);
+		close(data->map->fd_map);
 		free(data->map);
 	}
 	if (data->assets)

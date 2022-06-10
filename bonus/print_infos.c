@@ -32,7 +32,6 @@ void	ft_print_collec(t_data *data)
 	str = ft_strjoin(col, " / ");
 	str = ft_strjoin(str, item);
 	str = ft_strjoin(str, " collectibles");
-	// mlx_string_put(data->mlx, data->win, 0, 25, 0xFFFFFF, str);
 	mlx_string_put(data->mlx, data->win,
 		data->player->x - 35 + data->player->x * SPRITE_SIZE,
 		data->player->y + data->player->y * SPRITE_SIZE - 15, 0x7FF408, str);
